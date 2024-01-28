@@ -28,6 +28,4 @@ To run the "usepopcorn" application locally:
 
 Feel free to explore the codebase, contribute enhancements, or report any issues you encounter. Happy movie browsing!
 
-## License
-This project is licensed under the [MIT License](LICENSE).
 
