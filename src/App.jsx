@@ -93,6 +93,14 @@ export default function App() {
     setSeletedId(null)
   }
 
+  function handleAddWatched(movie){
+    setWatched(prev=>[...prev, movie])
+  }
+
+  function handleDeleteWatched(id){
+    setWatched(watched=>watched.filter(obj=>obj.imdbID!==id))
+  }
+
   return (
     <>
       <NavBar>
@@ -109,10 +117,10 @@ export default function App() {
         </Box>
         <Box>
           {
-          selectedId ? <MovieDetails onMovieClose={handleMovieClose} selectedId={selectedId}/> : 
+          selectedId ? <MovieDetails watched={watched} onAddWatched={handleAddWatched} onMovieClose={handleMovieClose} selectedId={selectedId}/> : 
           <>
           <WatchedSummary watched={watched}/>
-          <WatchedList watched={watched}/>
+          <WatchedList watched={watched} onDeleteWatched={handleDeleteWatched}/>
           </>
           }
         </Box>
@@ -163,32 +171,32 @@ function WatchedSummary({watched}){
     </p>
     <p>
       <span>⭐️</span>
-      <span>{avgImdbRating}</span>
+      <span>{avgImdbRating.toFixed(2)}</span>
     </p>
     <p>
       <span>🌟</span>
-      <span>{avgUserRating}</span>
+      <span>{avgUserRating.toFixed(2)}</span>
     </p>
     <p>
       <span>⏳</span>
-      <span>{avgRuntime} min</span>
+      <span>{avgRuntime.toFixed(2)} min</span>
     </p>
   </div>
 </div>
 }
 
-function WatchedList({watched}){
+function WatchedList({watched, onDeleteWatched}){
   return <ul className="list">
   {watched.map((movie) => (
-    <WatchListItem key={movie.imdbID} movie={movie}/>
+    <WatchListItem onDeleteWatched={onDeleteWatched} key={movie.imdbID} movie={movie}/>
   ))}
 </ul>
 }
 
-function WatchListItem({movie}){
+function WatchListItem({movie, onDeleteWatched}){
   return <li>
-  <img src={movie.Poster} alt={`${movie.Title} poster`} />
-  <h3>{movie.Title}</h3>
+  <img src={movie.poster} alt={`${movie.title} poster`} />
+  <h3>{movie.title}</h3>
   <div>
     <p>
       <span>⭐️</span>
@@ -202,6 +210,7 @@ function WatchListItem({movie}){
       <span>⏳</span>
       <span>{movie.runtime} min</span>
     </p>
+    <button className="btn-delete" onClick={()=>onDeleteWatched(movie.imdbID)}>X</button>
   </div>
 </li>
 }
@@ -227,9 +236,12 @@ function MovieListItem({movie, onSelectMovie}){
 </li>
 }
 
-function MovieDetails({selectedId, onMovieClose}){
+function MovieDetails({selectedId, onMovieClose, onAddWatched, watched}){
   const [movie, setMovie] = useState({})
   const [isloading, setIsLoading] = useState(false)
+  const [userRating, setUserRating] = useState(0)
+  const isWatched = watched.find(obj=>obj.imdbID==selectedId)
+
   const {
     Title: title,
     Year: year,
@@ -253,6 +265,21 @@ console.log(movie);
     }
     getMovie()
   },[selectedId])
+
+  function handleOnAddWatched(){
+    const newWatchedMovie = {
+      imdbID: selectedId,
+      userRating,
+      title,
+      year,
+      poster,
+      imdbRating: Number(imdbRating),
+      runtime: Number(runtime.split(' ')[0])
+    }
+    onAddWatched(newWatchedMovie)
+    onMovieClose()
+  }
+
   return <div className="details">
     {isloading?<Loader/>:<>
     <header>
@@ -268,9 +295,13 @@ console.log(movie);
       </div>
     </header>
     <section>
+      
       <div className="rating">
-        <StarRating maxStar={10} size={24}/>
-      </div>
+        {!isWatched ? <>
+        <StarRating maxStar={10} size={24} onSetRating={setUserRating}/>
+        {userRating>0 && <button onClick={handleOnAddWatched} className="btn-add">+ Add to list</button>}
+        </>:<p>You rated this movie {isWatched?.userRating} ⭐</p>}
+      </div> 
       <p><em>{plot}</em></p>
       <p>Starring {actors}</p>
       <p>Directed by {director}</p>
