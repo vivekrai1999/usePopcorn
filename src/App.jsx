@@ -254,7 +254,7 @@ function MovieDetails({selectedId, onMovieClose, onAddWatched, watched}){
     Genre: genre,
     imdbRating,
   } = movie
-console.log(movie);
+
   useEffect(()=>{
     async function getMovie(){
       setIsLoading(true)
@@ -265,6 +265,11 @@ console.log(movie);
     }
     getMovie()
   },[selectedId])
+
+  useEffect(()=>{
+    if(!title) return;
+    document.title = `Movie | ${title}`
+  },[title])
 
   function handleOnAddWatched(){
     const newWatchedMovie = {
