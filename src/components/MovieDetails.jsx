@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react"
 import StarRating from "./Starrating"
 import Loader from "./Loader"
+import { useKey } from "../hooks/useKey"
 
 const KEY = '84552b0e'
 
@@ -30,17 +31,7 @@ function MovieDetails({selectedId, onMovieClose, onAddWatched, watched}){
       imdbRating,
     } = movie
   
-    useEffect(()=>{
-      function callback(e){
-        if(e.code==='Escape'){
-          onMovieClose()
-        }
-      }
-      document.addEventListener('keydown',callback)
-      return function(){
-        document.removeEventListener('keydown',callback)
-      }
-    },[onMovieClose])
+    useKey('Escape', onMovieClose)
   
     useEffect(()=>{
       async function getMovie(){
