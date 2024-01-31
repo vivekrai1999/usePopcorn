@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 function WatchListItem({movie, onDeleteWatched}){
     return <li>
     <img src={movie.poster} alt={`${movie.title} poster`} />

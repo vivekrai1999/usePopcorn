@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import MovieListItem from "./MovieListItem"
 
 function MovieList({movies, onSelectMovie}){
