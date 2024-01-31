@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import StarRating from "./Starrating"
 import Loader from "./Loader"
 
@@ -9,6 +9,12 @@ function MovieDetails({selectedId, onMovieClose, onAddWatched, watched}){
     const [isloading, setIsLoading] = useState(false)
     const [userRating, setUserRating] = useState(0)
     const isWatched = watched.find(obj=>obj.imdbID==selectedId)
+
+    const userRef = useRef(0)
+
+    useEffect(()=>{
+      if(userRating) userRef.current = userRef.current + 1
+    },[userRating])
   
     const {
       Title: title,
@@ -62,7 +68,8 @@ function MovieDetails({selectedId, onMovieClose, onAddWatched, watched}){
         year,
         poster,
         imdbRating: Number(imdbRating),
-        runtime: Number(runtime.split(' ')[0])
+        runtime: Number(runtime.split(' ')[0]),
+        userDecision: userRef.current
       }
       onAddWatched(newWatchedMovie)
       onMovieClose()
